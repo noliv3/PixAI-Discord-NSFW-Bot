@@ -50,6 +50,7 @@ discord/
 - `!eventstats` – Show all running events and remaining time
 - `!r` – Restart the bot (admin only)
 - `!setscan <flag> <delete>` – Update scan thresholds at runtime
+- `!pixai <prompt>` – Generate an image using PixAI
 
 ## Installation
 
@@ -71,6 +72,11 @@ discord/
        "moderatorChannelId": "MOD_CHANNEL_ID_HERE"
    }
    ```
+5. Obtain a token for the image scanner service and set the
+   `SCANNER_API_URL` environment variable, e.g.:
+   ```bash
+   export SCANNER_API_URL="https://scanner.example.com/scan?token=YOUR_TOKEN"
+   ```
 
 
 ## Running the Bot
@@ -88,6 +94,18 @@ Make sure the bot has permission to read messages and add reactions in the chann
 ## Scanner Configuration
 
 Image scanning thresholds are read from `discord/scanner-config.json`. Adjust the values manually or use the `!setscan` command while the bot is running.
+
+Add a `?` (or `❓`) reaction to any message with image attachments to scan it. The bot responds with the top tags and marks the result with `✅` when safe or `❗` when it requires review.
+
+When a scan exceeds the configured thresholds, a notice is sent to the configured moderator channel. Moderators can react with **✅** to approve, **❌** to delete the offending message, or **🔁** to rescan the image.
+
+## PixAI Integration
+
+Use `!pixai <prompt>` to generate an image via the PixAI API. Create an account on [PixAI](https://pixai.art/) and obtain an API key. Set it before starting the bot:
+
+```bash
+export PIXAI_API_KEY=YOUR_PIXAI_KEY
+```
 
 ## Contributing
 
