@@ -2,6 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const scannerConfig = require('../lib/scannerConfig');
+const { scanImage } = require('../lib/scan');
 
 function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
@@ -9,18 +10,11 @@ function isImage(attachment) {
         url.endsWith('.gif') || url.endsWith('.webp');
 }
 
-async function scanImage(url) {
-    const imgResp = await axios.get(url, { responseType: 'arraybuffer' });
-    const apiUrl = process.env.SCANNER_API_URL || 'https://example.com/scan';
-    const resp = await axios.post(apiUrl, imgResp.data, {
-        headers: { 'Content-Type': 'application/octet-stream' }
-    });
-    return resp.data || {};
-}
 
 async function handleScan(attachment, message) {
     try {
         const data = await scanImage(attachment.url);
+        if (!data) return false;
         const risk = typeof data.risk === 'number' ? data.risk :
             (typeof data.risk_score === 'number' ? data.risk_score : 0);
 
