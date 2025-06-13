@@ -1,14 +1,5 @@
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-
-let scanConfig = { flagThreshold: 0.5, deleteThreshold: 0.9 };
-try {
-    const cfg = fs.readFileSync(path.join(__dirname, '..', 'scanconfig.json'), 'utf8');
-    scanConfig = Object.assign(scanConfig, JSON.parse(cfg));
-} catch (err) {
-    console.error('Failed to load scanconfig.json:', err.message);
-}
+const scannerConfig = require('../lib/scannerConfig');
 
 function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
@@ -31,7 +22,7 @@ async function handleScan(attachment, message) {
         const risk = typeof data.risk === 'number' ? data.risk :
             (typeof data.risk_score === 'number' ? data.risk_score : 0);
 
-        const { flagThreshold, deleteThreshold, moderatorRoleId, moderatorChannelId } = scanConfig;
+        const { flagThreshold, deleteThreshold, moderatorRoleId, moderatorChannelId } = scannerConfig.get();
         const mention = moderatorRoleId ? `<@&${moderatorRoleId}> ` : '';
 
         if (risk >= deleteThreshold) {

@@ -49,6 +49,7 @@ discord/
 - `!extend <eventname> <+/-hours>` – Extend or shorten an event
 - `!eventstats` – Show all running events and remaining time
 - `!r` – Restart the bot (admin only)
+- `!setscan <flag> <delete>` – Update scan thresholds at runtime
 
 ## Installation
 
@@ -61,6 +62,16 @@ discord/
    ```json
    { "token": "YOUR_BOT_TOKEN" }
    ```
+4. (Optional) Edit `discord/scanner-config.json` to adjust default thresholds:
+   ```json
+   {
+       "flagThreshold": 0.5,
+       "deleteThreshold": 0.9,
+       "moderatorRoleId": "MOD_ROLE_ID_HERE",
+       "moderatorChannelId": "MOD_CHANNEL_ID_HERE"
+   }
+   ```
+
 
 ## Running the Bot
 
@@ -73,6 +84,10 @@ pm2 start discord/index.js --name event-bot
 ```
 
 Make sure the bot has permission to read messages and add reactions in the channels where events are held. Votes from the same user count only once per image, and event folders are created automatically.
+
+## Scanner Configuration
+
+Image scanning thresholds are read from `discord/scanner-config.json`. Adjust the values manually or use the `!setscan` command while the bot is running.
 
 ## Contributing
 
