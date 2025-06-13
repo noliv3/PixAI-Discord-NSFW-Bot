@@ -43,7 +43,13 @@ module.exports = {
                 targetChannel = await guild.channels.create({
                     name: eventName,
                     type: 0,
-                    reason: `Event: ${eventName}`
+                    reason: `Event: ${eventName}`,
+                    permissionOverwrites: [
+                        {
+                            id: client.user.id,
+                            allow: ['ViewChannel', 'SendMessages', 'AddReactions']
+                        }
+                    ]
                 });
                 await message.reply(`📣 Created channel <#${targetChannel.id}> for the event.`);
             } catch (err) {
