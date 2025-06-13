@@ -36,7 +36,7 @@ discord/
 ├── lib/
 │   └── createStatsJson.js
 │
-├── events/ (storage)
+├── event_files/
 │   └── <eventname>/
 │       └── <eventname>_<user>_<msgid>_rateX_<date>.jpg
 ```
