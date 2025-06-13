@@ -1,5 +1,6 @@
 {
     "flagThreshold": 0.5,
     "deleteThreshold": 0.9,
-    "moderatorRoleId": "MOD_ROLE_ID_HERE"
+    "moderatorRoleId": "MOD_ROLE_ID_HERE",
+    "moderatorChannelId": "MOD_CHANNEL_ID_HERE"
 }

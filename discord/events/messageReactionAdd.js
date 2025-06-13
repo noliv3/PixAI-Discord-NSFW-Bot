@@ -1,4 +1,23 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+let scanConfig = { flagThreshold: 0.5, deleteThreshold: 0.9 };
+try {
+    const cfg = fs.readFileSync(path.join(__dirname, '..', 'scanconfig.json'), 'utf8');
+    scanConfig = Object.assign(scanConfig, JSON.parse(cfg));
+} catch (err) {
+    console.error('Failed to load scanconfig.json:', err.message);
+}
+
+async function scanImage(url) {
+    const imageResp = await axios.get(url, { responseType: 'arraybuffer' });
+    const apiUrl = process.env.SCANNER_API_URL || 'https://example.com/scan';
+    const scanResp = await axios.post(apiUrl, imageResp.data, {
+        headers: { 'Content-Type': 'application/octet-stream' }
+    });
+    return scanResp.data || {};
+}
 
 module.exports = {
     name: 'messageReactionAdd',
@@ -18,6 +37,46 @@ module.exports = {
         }
 
         const emoji = reaction.emoji.name;
+
+        if (client.flaggedReviews && client.flaggedReviews.has(reaction.message.id)) {
+            const review = client.flaggedReviews.get(reaction.message.id);
+            const guild = reaction.message.guild;
+            let member;
+            try {
+                member = await guild.members.fetch(user.id);
+            } catch {
+                return;
+            }
+            const isMod = (scanConfig.moderatorRoleId && member.roles.cache.has(scanConfig.moderatorRoleId)) || member.permissions.has('ManageMessages');
+            if (!isMod) return;
+
+            if (emoji === '✅') {
+                await reaction.message.reply(`Approved by ${user.tag}`);
+                client.flaggedReviews.delete(reaction.message.id);
+            } else if (emoji === '❌') {
+                try {
+                    const channel = await client.channels.fetch(review.channelId);
+                    const msg = await channel.messages.fetch(review.flaggedMessageId);
+                    await msg.delete();
+                    await reaction.message.reply(`Deleted by ${user.tag}`);
+                } catch (err) {
+                    await reaction.message.reply('Failed to delete message.');
+                }
+                client.flaggedReviews.delete(reaction.message.id);
+            } else if (emoji === '🔁') {
+                try {
+                    const data = await scanImage(review.attachmentUrl);
+                    const tags = Array.isArray(data.tags) ? data.tags : [];
+                    const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
+                    const tagText = tagNames.join(', ') || 'No tags';
+                    await reaction.message.reply(`Rescan: ${tagText}`);
+                } catch (err) {
+                    await reaction.message.reply('Rescan failed.');
+                }
+            }
+            return;
+        }
+
         if (emoji !== '?' && emoji !== '❓') return;
 
         const message = reaction.message;
@@ -32,13 +91,7 @@ module.exports = {
 
         const attachment = message.attachments.first();
         try {
-            const imageResp = await axios.get(attachment.url, { responseType: 'arraybuffer' });
-            const apiUrl = process.env.SCANNER_API_URL || 'https://example.com/scan';
-            const scanResp = await axios.post(apiUrl, imageResp.data, {
-                headers: { 'Content-Type': 'application/octet-stream' }
-            });
-
-            const data = scanResp.data || {};
+            const data = await scanImage(attachment.url);
             const tags = Array.isArray(data.tags) ? data.tags : [];
             const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
             const tagText = tagNames.join(', ') || 'No tags';
