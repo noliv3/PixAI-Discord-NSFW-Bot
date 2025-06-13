@@ -17,28 +17,32 @@ A modular bot for running community events with automatic channel handling, uplo
 ```
 discord/
 ├── index.js
-├── token.json
 ├── package.json
-│
+├── token.json
+├── scanner-config.json
 ├── commands/
-│   ├── start.js / startEvent.js
-│   ├── stop.js
-│   ├── extend.js
 │   ├── eventstats.js
+│   ├── extend.js
+│   ├── pixai.js
 │   ├── r.js
-│   └── zip.js (optional)
-│
+│   ├── setscan.js
+│   ├── start.js
+│   ├── stop.js
+│   └── zip.js
 ├── events/
 │   ├── messageCreate.js
+│   ├── messageDelete.js
 │   ├── messageReactionAdd.js
-│   ├── messageReactionRemove.js
-│
+│   └── messageReactionRemove.js
 ├── lib/
-│   └── createStatsJson.js
-│
-├── event_files/
-│   └── <eventname>/
-│       └── <eventname>_<user>_<msgid>_rateX_<date>.jpg
+│   ├── createStatsJson.js
+│   ├── scan.js
+│   └── scannerConfig.js
+├── config/
+│   └── ftp.json
+└── event_files/
+    └── <eventname>/
+        └── <eventname>_<user>_<msgid>_rateX_<date>.jpg
 ```
 
 ## Commands
@@ -51,6 +55,7 @@ discord/
 - `!r` – Restart the bot (admin only)
 - `!setscan <flag> <delete>` – Update scan thresholds at runtime
 - `!pixai <prompt>` – Generate an image using PixAI
+- `!zip <eventname> [topX]` – Archive event submissions as ZIP
 
 ## Installation
 
