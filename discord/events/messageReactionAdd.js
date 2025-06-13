@@ -1,16 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const scannerConfig = require('../lib/scannerConfig');
+const { scanImage } = require('../lib/scan');
 
-async function scanImage(url) {
-    const resp = await axios.get(url, { responseType: 'arraybuffer' });
-    const apiUrl = process.env.SCANNER_API_URL || 'https://example.com/scan';
-    const scan = await axios.post(apiUrl, resp.data, {
-        headers: { 'Content-Type': 'application/octet-stream' }
-    });
-    return scan.data || {};
-}
 
 module.exports = {
     name: 'messageReactionAdd',
@@ -57,14 +49,14 @@ module.exports = {
                 }
                 client.flaggedReviews.delete(message.id);
             } else if (emoji === '🔁') {
-                try {
-                    const data = await scanImage(review.attachmentUrl);
+                const data = await scanImage(review.attachmentUrl);
+                if (!data) {
+                    await message.reply('Rescan failed.');
+                } else {
                     const tags = Array.isArray(data.tags) ? data.tags : [];
                     const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
                     const tagText = tagNames.join(', ') || 'No tags';
                     await message.reply(`Rescan: ${tagText}`);
-                } catch (err) {
-                    await message.reply('Rescan failed.');
                 }
             }
             return;
@@ -106,17 +98,16 @@ module.exports = {
         client.scannedMessages.add(message.id);
 
         const attachment = message.attachments.first();
-        try {
-            const data = await scanImage(attachment.url);
+        const data = await scanImage(attachment.url);
+        if (!data) {
+            await message.channel.send('Image scan failed.');
+        } else {
             const tags = Array.isArray(data.tags) ? data.tags : [];
             const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
             const tagText = tagNames.join(', ') || 'No tags';
             const needsReview = data.needs_review || data.flagged || data.safe === false;
             const status = needsReview ? '❗' : '✅';
             await message.channel.send(`${tagText} ${status}`);
-        } catch (err) {
-            console.error('Scan failed:', err.message);
-            await message.channel.send('Image scan failed.');
         }
     }
 };
