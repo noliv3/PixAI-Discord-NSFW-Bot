@@ -53,8 +53,12 @@ module.exports = {
                 if (!data) {
                     await message.reply('Rescan failed.');
                 } else {
-                    const tags = Array.isArray(data.tags) ? data.tags : [];
-                    const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
+                    const tags = Array.isArray(data.tags) && data.tags.length
+                        ? data.tags
+                        : (Array.isArray(data.danbooru_tags) ? data.danbooru_tags : []);
+                    const tagNames = tags.slice(0, 10)
+                        .map(t => typeof t === 'string' ? t : (t.label || t.name || t.tag))
+                        .filter(Boolean);
                     const tagText = tagNames.join(', ') || 'No tags';
                     await message.reply(`Rescan: ${tagText}`);
                 }
@@ -102,8 +106,12 @@ module.exports = {
         if (!data) {
             await message.channel.send('Image scan failed.');
         } else {
-            const tags = Array.isArray(data.tags) ? data.tags : [];
-            const tagNames = tags.slice(0, 10).map(t => typeof t === 'string' ? t : (t.name || t.tag)).filter(Boolean);
+            const tags = Array.isArray(data.tags) && data.tags.length
+                ? data.tags
+                : (Array.isArray(data.danbooru_tags) ? data.danbooru_tags : []);
+            const tagNames = tags.slice(0, 10)
+                .map(t => typeof t === 'string' ? t : (t.label || t.name || t.tag))
+                .filter(Boolean);
             const tagText = tagNames.join(', ') || 'No tags';
             const needsReview = data.needs_review || data.flagged || data.safe === false;
             const status = needsReview ? '❗' : '✅';
