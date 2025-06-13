@@ -74,6 +74,7 @@ module.exports = {
             const channelId = message.channel.id;
             const event = client.activeEvents && client.activeEvents.get(channelId);
 
+            let notifiedLimit = false;
             for (const attachment of message.attachments.values()) {
                 if (!isImage(attachment)) continue;
 
@@ -81,6 +82,16 @@ module.exports = {
                 if (scanDeleted) continue;
 
                 if (event) {
+                    const count = event.entries.filter(e => e.userId === message.author.id).length;
+                    if (count >= event.max_entries) {
+                        if (!notifiedLimit) {
+                            try {
+                                await message.reply(`⛔ You reached the maximum of ${event.max_entries} entries for this event.`);
+                            } catch {}
+                            notifiedLimit = true;
+                        }
+                        continue;
+                    }
                     try {
                         const ext = path.extname(new URL(attachment.url).pathname);
                         const filename = `${event.name}_${message.author.id}_${message.id}_rate0_${Date.now()}${ext}`;
