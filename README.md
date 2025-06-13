@@ -73,3 +73,7 @@ pm2 start discord/index.js --name event-bot
 ```
 
 Make sure the bot has permission to read messages and add reactions in the channels where events are held. Votes from the same user count only once per image, and event folders are created automatically.
+
+## Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting issues, making changes, and submitting pull requests. A short summary of the code of conduct can be found in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
