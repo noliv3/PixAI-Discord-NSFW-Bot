@@ -1,0 +1,8 @@
+{
+  "host": "ftp.example.com",
+  "user": "USERNAME",
+  "password": "PASSWORD",
+  "secure": false,
+  "remoteDir": "/",
+  "publicUrl": "https://example.com/files"
+}
