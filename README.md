@@ -68,20 +68,33 @@ discord/
    ```json
    { "token": "YOUR_BOT_TOKEN" }
    ```
-4. (Optional) Edit `discord/scanner-config.json` to adjust default thresholds:
+4. Edit `discord/scanner-config.json` to set the scanner API URL and
+   adjust default thresholds:
    ```json
    {
+       "scannerApiUrl": "https://scanner.example.com/scan?token=YOUR_TOKEN",
        "flagThreshold": 0.5,
        "deleteThreshold": 0.9,
        "moderatorRoleId": "MOD_ROLE_ID_HERE",
        "moderatorChannelId": "MOD_CHANNEL_ID_HERE"
    }
    ```
-5. Obtain a token for the image scanner service and set the
-   `SCANNER_API_URL` environment variable, e.g.:
-   ```bash
-   export SCANNER_API_URL="https://scanner.example.com/scan?token=YOUR_TOKEN"
-   ```
+
+## Scanner Setup
+
+The bot uses an external image scanner to check uploaded files.
+Create an account on the scanner service or ask the bot administrator
+for an access token. Add the service URL including your token to
+`scannerApiUrl` in `discord/scanner-config.json`:
+
+```json
+{
+    "scannerApiUrl": "https://scanner.example.com/scan?token=YOUR_TOKEN"
+}
+```
+
+If this field is empty, uploads will **not** be scanned and the console
+will print a warning.
 
 
 ## Running the Bot
@@ -98,7 +111,9 @@ Make sure the bot has permission to read messages and add reactions in the chann
 
 ## Scanner Configuration
 
-Image scanning thresholds are read from `discord/scanner-config.json`. Adjust the values manually or use the `!setscan` command while the bot is running.
+Image scanning settings, including the API URL and thresholds, are read from
+`discord/scanner-config.json`. Adjust the values manually or use the `!setscan`
+command while the bot is running.
 
 Add a `?` (or `❓`) reaction to any message with image attachments to scan it. The bot responds with the top tags and marks the result with `✅` when safe or `❗` when it requires review.
 
