@@ -1,5 +1,7 @@
 {
-    "scannerApiUrl": "https://scanner.example.com/scan?token=YOUR_TOKEN",
+    "scannerApiUrl": "https://scanner.example.com/scan",
+    "authHeader": "Bearer YOUR_TOKEN",
+    "multipartField": "image",
     "flagThreshold": 0.5,
     "deleteThreshold": 0.9,
     "moderatorRoleId": "MOD_ROLE_ID_HERE",

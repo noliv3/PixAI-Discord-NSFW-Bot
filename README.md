@@ -84,16 +84,19 @@ discord/
 
 The bot uses an external image scanner to check uploaded files.
 Create an account on the scanner service or ask the bot administrator
-for an access token. Add the service URL including your token to
-`scannerApiUrl` in `discord/scanner-config.json`:
+for an access token. Add the service URL to `scannerApiUrl` in
+`discord/scanner-config.json` and optionally set `authHeader` and
+`multipartField` when the API expects them:
 
 ```json
 {
-    "scannerApiUrl": "https://scanner.example.com/scan?token=YOUR_TOKEN"
+    "scannerApiUrl": "https://scanner.example.com/scan",
+    "authHeader": "Bearer YOUR_TOKEN",
+    "multipartField": "image"
 }
 ```
 
-If this field is empty, uploads will **not** be scanned and the console
+If `scannerApiUrl` is empty, uploads will **not** be scanned and the console
 will print a warning.
 
 
@@ -111,7 +114,8 @@ Make sure the bot has permission to read messages and add reactions in the chann
 
 ## Scanner Configuration
 
-Image scanning settings, including the API URL and thresholds, are read from
+Image scanning settings, including the API URL, optional authorization header,
+multipart field, and thresholds, are read from
 `discord/scanner-config.json`. Adjust the values manually or use the `!setscan`
 command while the bot is running.
 
