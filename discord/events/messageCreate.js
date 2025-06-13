@@ -31,7 +31,7 @@ async function handleScan(attachment, message) {
         const risk = typeof data.risk === 'number' ? data.risk :
             (typeof data.risk_score === 'number' ? data.risk_score : 0);
 
-        const { flagThreshold, deleteThreshold, moderatorRoleId } = scanConfig;
+        const { flagThreshold, deleteThreshold, moderatorRoleId, moderatorChannelId } = scanConfig;
         const mention = moderatorRoleId ? `<@&${moderatorRoleId}> ` : '';
 
         if (risk >= deleteThreshold) {
@@ -39,6 +39,23 @@ async function handleScan(attachment, message) {
             await message.channel.send(`${mention}Image from ${message.author} deleted. Risk: ${risk}`);
         } else if (risk >= flagThreshold) {
             await message.channel.send(`${mention}Image from ${message.author} flagged. Risk: ${risk}`);
+            if (moderatorChannelId) {
+                try {
+                    const modChannel = await message.client.channels.fetch(moderatorChannelId);
+                    const summary = await modChannel.send(`Flagged image from ${message.author} (risk ${risk}). [Jump](${message.url})`);
+                    await summary.react('✅');
+                    await summary.react('❌');
+                    await summary.react('🔁');
+                    if (!message.client.flaggedReviews) message.client.flaggedReviews = new Map();
+                    message.client.flaggedReviews.set(summary.id, {
+                        flaggedMessageId: message.id,
+                        channelId: message.channel.id,
+                        attachmentUrl: attachment.url
+                    });
+                } catch (err) {
+                    console.error('Failed to notify moderator channel:', err.message);
+                }
+            }
         }
     } catch (err) {
         console.error('Scan failed:', err.message);
