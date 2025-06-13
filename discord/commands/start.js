@@ -58,7 +58,7 @@ module.exports = {
             return message.reply('⚠️ An event is already running in that channel.');
         }
 
-        const eventFolder = path.join(__dirname, '..', 'events', eventName);
+        const eventFolder = path.join(__dirname, '..', 'event_files', eventName);
         if (!fs.existsSync(eventFolder)) {
             fs.mkdirSync(eventFolder, { recursive: true });
         }

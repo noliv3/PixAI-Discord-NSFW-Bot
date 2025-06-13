@@ -16,7 +16,7 @@ module.exports = {
             return message.reply('❌ Usage: `!zip <eventname> [topX]`');
         }
 
-        const folderPath = path.join(__dirname, '..', 'events', eventName);
+        const folderPath = path.join(__dirname, '..', 'event_files', eventName);
         if (!fs.existsSync(folderPath)) {
             return message.reply(`❌ No folder found for event \`${eventName}\`.`);
         }
