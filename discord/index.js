@@ -3,6 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const { token } = require('./token.json');
 
+// Ensure folder for archived deletions exists
+const deletedPath = path.join(__dirname, 'deleted');
+if (!fs.existsSync(deletedPath)) {
+    fs.mkdirSync(deletedPath, { recursive: true });
+}
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
