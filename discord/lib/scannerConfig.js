@@ -4,6 +4,7 @@ const path = require('path');
 const configPath = path.join(__dirname, '..', 'scanner-config.json');
 
 const config = {
+    scannerApiUrl: '',
     flagThreshold: 0.5,
     deleteThreshold: 0.9,
     moderatorRoleId: '',

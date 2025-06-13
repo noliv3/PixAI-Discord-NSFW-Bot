@@ -1,4 +1,5 @@
 {
+    "scannerApiUrl": "https://scanner.example.com/scan?token=YOUR_TOKEN",
     "flagThreshold": 0.5,
     "deleteThreshold": 0.9,
     "moderatorRoleId": "MOD_ROLE_ID_HERE",
