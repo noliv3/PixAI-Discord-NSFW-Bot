@@ -1,14 +1,5 @@
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-
-let scanConfig = { flagThreshold: 0.5, deleteThreshold: 0.9 };
-try {
-    const cfg = fs.readFileSync(path.join(__dirname, '..', 'scanconfig.json'), 'utf8');
-    scanConfig = Object.assign(scanConfig, JSON.parse(cfg));
-} catch (err) {
-    console.error('Failed to load scanconfig.json:', err.message);
-}
+const scannerConfig = require('../lib/scannerConfig');
 
 async function scanImage(url) {
     const imageResp = await axios.get(url, { responseType: 'arraybuffer' });
@@ -47,7 +38,8 @@ module.exports = {
             } catch {
                 return;
             }
-            const isMod = (scanConfig.moderatorRoleId && member.roles.cache.has(scanConfig.moderatorRoleId)) || member.permissions.has('ManageMessages');
+            const cfg = scannerConfig.get();
+            const isMod = (cfg.moderatorRoleId && member.roles.cache.has(cfg.moderatorRoleId)) || member.permissions.has('ManageMessages');
             if (!isMod) return;
 
             if (emoji === '✅') {
