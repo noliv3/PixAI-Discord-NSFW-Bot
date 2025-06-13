@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const scannerConfig = require('../lib/scannerConfig');
 
 function isImage(attachment) {
@@ -28,6 +30,7 @@ async function handleScan(attachment, message) {
         if (risk >= deleteThreshold) {
             await message.delete().catch(() => {});
             await message.channel.send(`${mention}Image from ${message.author} deleted. Risk: ${risk}`);
+            return true;
         } else if (risk >= flagThreshold) {
             await message.channel.send(`${mention}Image from ${message.author} flagged. Risk: ${risk}`);
             if (moderatorChannelId) {
@@ -51,6 +54,7 @@ async function handleScan(attachment, message) {
     } catch (err) {
         console.error('Scan failed:', err.message);
     }
+    return false;
 }
 
 module.exports = {
@@ -73,9 +77,33 @@ module.exports = {
         }
 
         if (message.attachments && message.attachments.size > 0) {
+            const channelId = message.channel.id;
+            const event = client.activeEvents && client.activeEvents.get(channelId);
+
             for (const attachment of message.attachments.values()) {
-                if (isImage(attachment)) {
-                    handleScan(attachment, message);
+                if (!isImage(attachment)) continue;
+
+                const scanDeleted = await handleScan(attachment, message);
+                if (scanDeleted) continue;
+
+                if (event) {
+                    try {
+                        const ext = path.extname(new URL(attachment.url).pathname);
+                        const filename = `${event.name}_${message.author.id}_${message.id}_rate0_${Date.now()}${ext}`;
+                        const dest = path.join(event.folder, filename);
+                        const imgData = await axios.get(attachment.url, { responseType: 'arraybuffer' });
+                        fs.writeFileSync(dest, imgData.data);
+
+                        event.entries.push({
+                            messageId: message.id,
+                            userId: message.author.id,
+                            filename,
+                            reactionUsers: new Set()
+                        });
+                        event.users.add(message.author.id);
+                    } catch (err) {
+                        console.error('Failed to save attachment:', err.message);
+                    }
                 }
             }
         }
