@@ -2,7 +2,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const scannerConfig = require('../lib/scannerConfig');
-const { scanImage } = require('../lib/scan');
+const { scanImage, scanBuffer } = require('../lib/scan');
+const { extractFrames } = require('../lib/videoFrameExtractor');
 const { isImageUrl } = require('../lib/urlSanitizer');
 const { getFilters } = require('../lib/filterManager');
 
@@ -10,6 +11,16 @@ function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
     return url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.jpeg') ||
            url.endsWith('.gif') || url.endsWith('.webp');
+}
+
+function isVideo(attachment) {
+    const url = (attachment.url || '').toLowerCase();
+    return url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ||
+           url.endsWith('.mkv') || url.endsWith('.avi');
+}
+
+function isMedia(attachment) {
+    return isImage(attachment) || isVideo(attachment);
 }
 
 function extractTags(data) {
@@ -111,6 +122,80 @@ async function handleScan(attachment, message, client) {
     return false;
 }
 
+async function handleVideoScan(attachment, message, client) {
+    try {
+        const frames = await extractFrames(attachment.url, [0, 10]);
+        for (const frame of frames) {
+            const data = await scanBuffer(frame);
+            if (!data) continue;
+
+            const tags = extractTags(data).map(t => t.toLowerCase());
+            const filters = getFilters();
+            const { flagThreshold, deleteThreshold, moderatorRoleId, moderatorChannelId } = scannerConfig.get();
+
+            const matches = (lvl) => filters[lvl]?.filter(f => tags.includes(f)) || [];
+            const match0 = matches(0);
+            const match1 = matches(1);
+            const match2 = matches(2);
+            const matchTags = [...match0, ...match1, ...match2];
+
+            const tagList = highlightTags(tags, matchTags);
+
+            if (match0.length > 0) {
+                await message.delete().catch(() => {});
+                if (moderatorChannelId) {
+                    const modChannel = await client.channels.fetch(moderatorChannelId);
+                    await modChannel.send({
+                        content: `🚫 **Deleted video** from ${message.author} (Trigger: ${match0.map(t => `**${t}**`).join(', ')})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                        files: [attachment.url]
+                    });
+                }
+                return true;
+            }
+
+            const risk = typeof data.risk === 'number' ? data.risk :
+                (typeof data.risk_score === 'number' ? data.risk_score : 0);
+
+            if (risk >= deleteThreshold) {
+                await message.delete().catch(() => {});
+                if (moderatorChannelId) {
+                    const modChannel = await client.channels.fetch(moderatorChannelId);
+                    await modChannel.send({
+                        content: `🚫 **Deleted video** from ${message.author} due to high risk: ${risk}\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                        files: [attachment.url]
+                    });
+                }
+                return true;
+            }
+
+            if (risk >= flagThreshold || match1.length > 0 || match2.length > 0) {
+                if (moderatorChannelId) {
+                    const modChannel = await client.channels.fetch(moderatorChannelId);
+                    const summary = await modChannel.send({
+                        content: `⚠️ Flagged video from ${message.author} (risk ${risk})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                        files: [attachment.url]
+                    });
+
+                    await summary.react('✅');
+                    await summary.react('❌');
+                    await summary.react('🔁');
+
+                    if (!client.flaggedReviews) client.flaggedReviews = new Map();
+                    client.flaggedReviews.set(summary.id, {
+                        flaggedMessageId: message.id,
+                        channelId: message.channel.id,
+                        attachmentUrl: attachment.url
+                    });
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Video scan failed:', err.message);
+    }
+
+    return false;
+}
+
 module.exports = {
     name: 'messageCreate',
     async execute(message, client) {
@@ -143,12 +228,18 @@ module.exports = {
         let notifiedLimit = false;
 
         for (const item of allTargets) {
-            const validImage =
-                item.filename ? isImage(item) : await isImageUrl(item.url);
+            const isImg = item.filename ? isImage(item) : await isImageUrl(item.url);
+            const isVid = item.filename ? isVideo(item) : false;
 
-            if (!validImage) continue;
+            if (!isImg && !isVid) continue;
 
-            const scanDeleted = await handleScan(item, message, client);
+            let scanDeleted = false;
+
+            if (isVid) {
+                scanDeleted = await handleVideoScan(item, message, client);
+            } else if (isImg) {
+                scanDeleted = await handleScan(item, message, client);
+            }
             if (scanDeleted) continue;
 
             if (event && item.filename) {
