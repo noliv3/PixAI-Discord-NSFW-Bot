@@ -12,6 +12,7 @@ Ein modularer Discord-Bot für Events, Bildbewertung, NSFW-Erkennung und automat
 - 📊 Live-Statistiken (`!eventstats`)
 - 🕒 Erweiterbare Laufzeit (`!extend`)
 - 📆 ZIP-Export der besten Einreichungen (`!zip`)
+- 📝 Ungültige Bild-Links werden in `logs/invalid_urls.log` protokolliert
 
 ---
 
