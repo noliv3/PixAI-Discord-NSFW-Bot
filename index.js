@@ -2,6 +2,12 @@ const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js'
 const fs = require('fs');
 const path = require('path');
 const { token } = require('./token.json');
+let config = {};
+try {
+    config = require('./config.json');
+} catch (err) {
+    console.warn('config.json not found. Continuing with defaults.');
+}
 
 // Ensure folder for archived deletions exists
 const deletedPath = path.join(__dirname, 'deleted');
@@ -23,6 +29,8 @@ const client = new Client({
         Partials.Reaction
     ]
 });
+
+client.config = config;
 
 client.flaggedReviews = new Map();
 
