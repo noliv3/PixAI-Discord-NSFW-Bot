@@ -1,17 +1,25 @@
-# Sicherheit
-token.json
-.env
+# Node modules & logs
+node_modules/
+npm-debug.log*
 
-# Eventdaten & temporär
+# Konfigurationsdateien (lokal behalten)
+token.json
+scanner-config.json
+scanner-filters.json
+config/ftp.json
+
+# Gespeicherte Daten
 event_files/
 deleted/
 temp/
 *.zip
+*.json_old
 
-# Konfiguration
-scanner-config.json
-scanner-filters.json
+# Betriebssystem-/Editor-Dateien
+.DS_Store
+Thumbs.db
+*.swp
 
-# Node
-node_modules/
-npm-debug.log
+# Umgebung
+.env
+.env.local
