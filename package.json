@@ -4,13 +4,14 @@
   "description": "Discord Event Voting Bot with Upload, Rating, and FTP export",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jest"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",
     "axios": "^1.6.7",
-    "discord.js": "^14.13.0",
     "basic-ftp": "^5.0.5",
+    "discord.js": "^14.13.0",
     "form-data": "^4.0.0"
   },
   "engines": {
@@ -18,5 +19,8 @@
   },
   "keywords": [],
   "author": "Jens",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
