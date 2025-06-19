@@ -1,0 +1,17 @@
+# Sicherheit
+token.json
+.env
+
+# Eventdaten & temporär
+event_files/
+deleted/
+temp/
+*.zip
+
+# Konfiguration
+scanner-config.json
+scanner-filters.json
+
+# Node
+node_modules/
+npm-debug.log
