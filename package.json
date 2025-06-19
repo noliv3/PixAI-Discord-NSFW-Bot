@@ -21,6 +21,7 @@
   "author": "Jens",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "nock": "^14.0.5"
   }
 }

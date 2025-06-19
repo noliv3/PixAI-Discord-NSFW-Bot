@@ -12,6 +12,7 @@ config/ftp.json
 event_files/
 deleted/
 temp/
+logs/
 *.zip
 *.json_old
 
