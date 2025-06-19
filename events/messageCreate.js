@@ -50,7 +50,7 @@ async function handleScan(attachment, message, client) {
             if (moderatorChannelId) {
                 const modChannel = await client.channels.fetch(moderatorChannelId);
                 await modChannel.send({
-                    content: `🚫 **Deleted image** from ${message.author} (Trigger: ${match0.map(t => `**${t}**`).join(', ')})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                    content: `${mention}🚫 **Deleted image** from ${message.author} (Trigger: ${match0.map(t => `**${t}**`).join(', ')})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
                     files: [attachment.url]
                 });
             }
@@ -65,7 +65,7 @@ async function handleScan(attachment, message, client) {
             if (moderatorChannelId) {
                 const modChannel = await client.channels.fetch(moderatorChannelId);
                 await modChannel.send({
-                    content: `🚫 **Deleted image** from ${message.author} due to high risk: ${risk}\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                    content: `${mention}🚫 **Deleted image** from ${message.author} due to high risk: ${risk}\n**Tags:** ${tagList}\n[Jump](${message.url})`,
                     files: [attachment.url]
                 });
             }
@@ -76,7 +76,7 @@ async function handleScan(attachment, message, client) {
             if (moderatorChannelId) {
                 const modChannel = await client.channels.fetch(moderatorChannelId);
                 const summary = await modChannel.send({
-                    content: `⚠️ Flagged image from ${message.author} (risk ${risk})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
+                    content: `${mention}⚠️ Flagged image from ${message.author} (risk ${risk})\n**Tags:** ${tagList}\n[Jump](${message.url})`,
                     files: [attachment.url]
                 });
 
@@ -94,7 +94,7 @@ async function handleScan(attachment, message, client) {
         }
 
     } catch (err) {
-        console.error('Scan failed:', err.message);
+        console.error('Scan failed:', err.stack || err.message);
     }
 
     return false;
@@ -168,7 +168,7 @@ async function handleVideoScan(attachment, message, client) {
             }
         }
     } catch (err) {
-        console.error('Video scan failed:', err.message);
+        console.error('Video scan failed:', err.stack || err.message);
     }
 
     return false;
@@ -246,7 +246,7 @@ module.exports = {
                     });
                     event.users.add(message.author.id);
                 } catch (err) {
-                    console.error('Failed to save attachment:', err.message);
+                    console.error('Failed to save attachment:', err.stack || err.message);
                 }
             }
         }
