@@ -12,7 +12,6 @@ Ein modularer Discord-Bot für Events, Bildbewertung, NSFW-Erkennung und automat
 - 📊 Live-Statistiken (`!eventstats`)
 - 🕒 Erweiterbare Laufzeit (`!extend`)
 - 📆 ZIP-Export der besten Einreichungen (`!zip`)
-- 🤖 PixAI-Image-Generation (`!pixai <prompt>`)
 
 ---
 
