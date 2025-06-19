@@ -122,7 +122,7 @@ module.exports = {
             const command = client.commands.get(commandName);
             if (command) {
                 try {
-                    await command.execute(message, args);
+                    await command.execute(message, client, args);
                 } catch (error) {
                     console.error(error);
                     await message.reply('There was an error executing that command.');

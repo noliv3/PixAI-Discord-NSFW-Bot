@@ -2,7 +2,7 @@ const scannerConfig = require('../lib/scannerConfig');
 
 module.exports = {
     name: 'filter',
-    async execute(message, args) {
+    async execute(message, client, args) {
         const { moderatorRoleId } = scannerConfig.get();
         const member = message.guild.members.cache.get(message.author.id);
 

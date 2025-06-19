@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
     name: 'eventstats',
 
-    async execute(message, client) {
+    async execute(message, client, args) {
         const activeEvents = client.activeEvents;
 
         if (!activeEvents || activeEvents.size === 0) {

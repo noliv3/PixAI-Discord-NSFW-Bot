@@ -1,10 +1,10 @@
 module.exports = {
     name: 'extend',
 
-    async execute(message, client) {
-        const args = message.content.trim().split(' ').slice(1);
-        const eventName = args[0];
-        const value = parseInt(args[1]);
+    async execute(message, client, args) {
+        const cmdArgs = message.content.trim().split(' ').slice(1);
+        const eventName = cmdArgs[0];
+        const value = parseInt(cmdArgs[1]);
 
         if (!eventName || isNaN(value)) {
             return message.reply({ content: '❌ Usage: `!extend <eventname> <+/-hours>`', ephemeral: true });

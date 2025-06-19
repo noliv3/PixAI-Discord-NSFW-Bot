@@ -5,7 +5,7 @@ const createStatsJson = require('../lib/createStatsJson');
 module.exports = {
     name: 'stop',
 
-    async execute(message, client) {
+    async execute(message, client, args) {
         const channelId = message.channel.id;
         const activeEvents = client.activeEvents;
 

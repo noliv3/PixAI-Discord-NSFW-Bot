@@ -3,7 +3,7 @@ const scannerConfig = require('../lib/scannerConfig');
 module.exports = {
     name: 'setscan',
     description: 'Adjust scan thresholds',
-    execute(message, args) {
+    execute(message, client, args) {
         if (args.length < 2) {
             message.reply('Usage: !setscan <flagThreshold> <deleteThreshold>');
             return;

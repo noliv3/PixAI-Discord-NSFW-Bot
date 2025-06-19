@@ -37,7 +37,7 @@ async function fetchPixAI(prompt) {
 module.exports = {
     name: 'pixai',
     description: 'Generate image via PixAI',
-    async execute(message, args) {
+    async execute(message, client, args) {
         const prompt = args.join(' ');
         if (!prompt) {
             message.reply('Please provide a prompt.');
