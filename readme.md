@@ -1,5 +1,7 @@
 # PixAI Discord NSFW Bot
 
+**Version 1.0.0**
+
 Ein modularer Discord-Bot für Events, Bildbewertung, NSFW-Erkennung und automatisierte Moderation – powered by einer lokalen Bildscanner-API.
 
 ---
