@@ -1,5 +1,5 @@
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs/promises');
 const path = require('path');
 const scannerConfig = require('../lib/scannerConfig');
 const { scanImage, scanBuffer } = require('../lib/scan');
@@ -236,7 +236,7 @@ module.exports = {
                     const filename = `${event.name}_${message.author.id}_${message.id}_rate0_${Date.now()}${ext}`;
                     const dest = path.join(event.folder, filename);
                     const imgData = await axios.get(item.url, { responseType: 'arraybuffer' });
-                    fs.writeFileSync(dest, imgData.data);
+                    await fs.writeFile(dest, imgData.data);
 
                     event.entries.push({
                         messageId: message.id,
