@@ -1,7 +1,8 @@
-const cache = require('../lib/scanCache');
-
 describe('scanCache', () => {
+  const TTL = 600000; // must match value in scanCache.js
+
   beforeEach(() => {
+    jest.resetModules();
     jest.useFakeTimers();
   });
 
@@ -9,15 +10,15 @@ describe('scanCache', () => {
     jest.useRealTimers();
   });
 
-  test('markScanned and isRecentlyScanned', () => {
-    const now = 1000;
-    jest.spyOn(Date, 'now').mockReturnValue(now);
+  test('markScanned and isRecentlyScanned with timers', () => {
+    const cache = require('../lib/scanCache');
+
     cache.markScanned('msg');
 
-    jest.spyOn(Date, 'now').mockReturnValue(now + 5000);
+    jest.advanceTimersByTime(TTL - 1);
     expect(cache.isRecentlyScanned('msg')).toBe(true);
 
-    jest.spyOn(Date, 'now').mockReturnValue(now + 600000 + 1);
+    jest.advanceTimersByTime(1);
     expect(cache.isRecentlyScanned('msg')).toBe(false);
   });
 });
