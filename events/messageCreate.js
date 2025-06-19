@@ -7,6 +7,7 @@ const { extractFrames } = require('../lib/videoFrameExtractor');
 const { isImageUrl } = require('../lib/urlSanitizer');
 const { getFilters } = require('../lib/filterManager');
 const { extractTags, highlightTags } = require('../lib/tagUtils');
+const { isRecentlyScanned, markScanned } = require('../lib/scanCache');
 
 function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
@@ -192,9 +193,8 @@ module.exports = {
             }
         }
 
-        if (!client.scannedMessages) client.scannedMessages = new Set();
-        if (client.scannedMessages.has(message.id)) return;
-        client.scannedMessages.add(message.id);
+        if (isRecentlyScanned(message.id)) return;
+        markScanned(message.id);
 
         const attachments = [...message.attachments.values()];
         const urls = [...message.content.matchAll(/https?:\/\/\S+/gi)].map(m => m[0]);
