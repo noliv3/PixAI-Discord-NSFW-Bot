@@ -11,6 +11,11 @@ module.exports = {
         }
 
         const activeEvents = client.activeEvents;
+
+        if (!activeEvents) {
+            return message.reply({ content: '❌ Keine aktiven Events vorhanden.', ephemeral: true });
+        }
+
         const entry = [...activeEvents.entries()].find(([, evt]) => evt.name === eventName);
 
         if (!entry) {
