@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
 const scannerConfig = require('../lib/scannerConfig');
@@ -17,9 +17,7 @@ module.exports = {
         if (!message.attachments || message.attachments.size === 0) return;
 
         const deletedDir = path.join(__dirname, '..', 'deleted');
-        if (!fs.existsSync(deletedDir)) {
-            fs.mkdirSync(deletedDir, { recursive: true });
-        }
+        await fs.mkdir(deletedDir, { recursive: true });
 
         const timestamp = Date.now();
 
@@ -29,7 +27,7 @@ module.exports = {
                 const filename = `${message.author.id}_${timestamp}${ext}`;
                 const dest = path.join(deletedDir, filename);
                 const resp = await axios.get(attachment.url, { responseType: 'arraybuffer' });
-                fs.writeFileSync(dest, resp.data);
+                await fs.writeFile(dest, resp.data);
             } catch (err) {
                 console.error('Failed to save deleted attachment:', err.message);
             }
