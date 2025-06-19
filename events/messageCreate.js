@@ -6,6 +6,7 @@ const { scanImage, scanBuffer } = require('../lib/scan');
 const { extractFrames } = require('../lib/videoFrameExtractor');
 const { isImageUrl } = require('../lib/urlSanitizer');
 const { getFilters } = require('../lib/filterManager');
+const { extractTags, highlightTags } = require('../lib/tagUtils');
 
 function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
@@ -23,30 +24,6 @@ function isMedia(attachment) {
     return isImage(attachment) || isVideo(attachment);
 }
 
-function extractTags(data) {
-    const modules = {};
-    for (const [key, value] of Object.entries(data)) {
-        if (key.startsWith('modules.')) {
-            modules[key.slice(8)] = value;
-        }
-    }
-
-    const rawTags =
-        modules.deepdanbooru_tags?.tags ||
-        modules.tagging?.tags ||
-        modules.image_storage?.metadata?.danbooru_tags ||
-        modules.image_storage?.metadata?.tags ||
-        [];
-
-    const tags = Array.isArray(rawTags) ? rawTags : [];
-    return tags.map(t => typeof t === 'string' ? t : (t.label || t.name || t.tag)).filter(Boolean);
-}
-function highlightTags(tags, filterMatch) {
-    return tags
-        .map(tag => filterMatch.includes(tag) ? `**${tag}**` : tag)
-        .slice(0, 20)
-        .join(', ') || '—';
-}
 async function handleScan(attachment, message, client) {
     try {
         const data = await scanImage(attachment.url);
