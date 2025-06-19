@@ -9,7 +9,7 @@ const { getFilters } = require('../lib/filterManager');
 function isImage(attachment) {
     const url = (attachment.url || '').toLowerCase();
     return url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.jpeg') ||
-        url.endsWith('.gif') || url.endsWith('.webp');
+           url.endsWith('.gif') || url.endsWith('.webp');
 }
 
 function extractTags(data) {
