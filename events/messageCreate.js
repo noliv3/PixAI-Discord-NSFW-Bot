@@ -174,9 +174,7 @@ async function handleVideoScan(attachment, message, client) {
     return false;
 }
 
-module.exports = {
-    name: 'messageCreate',
-    async execute(message, client) {
+async function execute(message, client) {
         if (message.author.bot) return;
 
         if (message.content.startsWith('!')) {
@@ -249,6 +247,16 @@ module.exports = {
                     console.error('Failed to save attachment:', err.stack || err.message);
                 }
             }
+
         }
     }
+
+module.exports = {
+    name: 'messageCreate',
+    execute,
+    isImage,
+    isVideo,
+    isMedia,
+    handleScan,
+    handleVideoScan
 };
