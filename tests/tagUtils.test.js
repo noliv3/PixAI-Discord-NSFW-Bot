@@ -14,4 +14,25 @@ describe('tagUtils', () => {
     const result = highlightTags(tags, ['dog']);
     expect(result).toBe('cat, **dog**, bird');
   });
+
+  test('extractTags handles other module formats', () => {
+    const data = {
+      'modules.tagging': { tags: [{ name: 'wolf' }, 'sheep', 'rating:safe'] }
+    };
+    const tags = extractTags(data);
+    expect(tags).toEqual(['wolf', 'sheep']);
+  });
+
+  test('extractTags falls back to image_storage metadata', () => {
+    const data = {
+      'modules.image_storage': { metadata: { tags: [{ tag: 'tree' }, 'leaf', 'rating:safe'] } }
+    };
+    const tags = extractTags(data);
+    expect(tags).toEqual(['tree', 'leaf']);
+  });
+
+  test('highlightTags returns dash for empty tag list', () => {
+    const result = highlightTags([], ['x']);
+    expect(result).toBe('—');
+  });
 });
