@@ -7,10 +7,10 @@ const ftpConfig = require('../config/ftp.json');
 module.exports = {
     name: 'zip',
 
-    async execute(message, client) {
-        const args = message.content.trim().split(' ').slice(1);
-        const eventName = args[0];
-        const topArg = args[1];
+    async execute(message, client, args) {
+        const cmdArgs = args && args.length ? args : message.content.trim().split(' ').slice(1);
+        const eventName = cmdArgs[0];
+        const topArg = cmdArgs[1];
 
         if (!eventName) {
             return message.reply('❌ Usage: `!zip <eventname> [topX]`');

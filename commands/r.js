@@ -2,7 +2,7 @@ module.exports = {
     name: 'r',
     description: 'Restart the bot (restricted user only)',
 
-    async execute(message, client) {
+    async execute(message, client, args) {
         if (message.author.id !== '285092601449807872') {
             return;
         }

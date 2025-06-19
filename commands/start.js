@@ -7,22 +7,22 @@ const activeEvents = new Map();
 module.exports = {
     name: 'start',
 
-    async execute(message, client) {
-        const args = message.content.split(' ').slice(1);
+    async execute(message, client, args) {
+        const cmdArgs = args && args.length ? args : message.content.split(' ').slice(1);
 
         let eventName, durationArg, maxEntries;
         const guild = message.guild;
         const currentChannel = message.channel;
 
         // Zwei Varianten: !start 2 oder !start <name> <dauer> <max>
-        if (args.length === 1) {
+        if (cmdArgs.length === 1) {
             eventName = currentChannel.name.toLowerCase().replace(/[^a-z0-9_]/g, '_');
-            durationArg = args[0];
+            durationArg = cmdArgs[0];
             maxEntries = 1;
-        } else if (args.length >= 3) {
-            eventName = args[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
-            durationArg = args[1];
-            maxEntries = parseInt(args[2]);
+        } else if (cmdArgs.length >= 3) {
+            eventName = cmdArgs[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+            durationArg = cmdArgs[1];
+            maxEntries = parseInt(cmdArgs[2]);
         } else {
             return message.reply('❌ Usage: `!start <name> <duration> <max>` or `!start <duration>`');
         }
