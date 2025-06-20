@@ -31,10 +31,10 @@ Participants can vote on submissions with any emoji except the moderator control
 
 Uploads are scanned using the configured API. Content that meets the flag threshold is posted to your moderation channel. React on that message to take action:
 
-- `✅` – approve and keep the image.
+- `👍` – approve and keep the image.
+- `👎` – rescan or reject the image, depending on your configuration.
 - `❌` – delete the original post.
 - `⚠️` – warn the user via DM.
-- `🔁` – rescan and display the detected tags.
 
 Users can also trigger a public scan by reacting with `?` to a message containing an attachment.
 

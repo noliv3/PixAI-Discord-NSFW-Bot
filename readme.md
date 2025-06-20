@@ -8,7 +8,7 @@ A modular Discord bot for image events, rating, NSFW detection and automated mod
 
 - 📁 Automatic event handling with image uploads
 - 🧠 NSFW analysis and tag scoring via a local scanner API
-- 🔁 Voting with reactions (`⭐`, `✅`, `❌`, `🔁`)
+- Voting with reactions (`⭐`, `👍`, `👎`, `❌`)
 - 📊 Live statistics using `!eventstats`
 - 🕒 Extend event duration with `!extend`
 - 📆 ZIP export of top submissions (`!zip`)
@@ -109,7 +109,7 @@ export PIXAI_API_KEY=your_key
 - **Filter level 0:** delete immediately
 - **Level 1–2:** flag for moderator review
 - **Level 3:** no action
-- Reviews can be managed with ✅, ❌, 🔁
+- Reviews can be managed with 👍, 👎, ❌, ⚠️
 
 ---
 
