@@ -80,10 +80,10 @@ async function handleScan(attachment, message, client) {
                     files: [attachment.url]
                 });
 
-                await summary.react('✅');
+                await summary.react('👍');
+                await summary.react('👎');
                 await summary.react('❌');
                 await summary.react('⚠️');
-                await summary.react('🔁');
 
                 if (!client.flaggedReviews) client.flaggedReviews = new Map();
                 client.flaggedReviews.set(summary.id, {
@@ -156,10 +156,10 @@ async function handleVideoScan(attachment, message, client) {
                         files: [attachment.url]
                     });
 
-                    await summary.react('✅');
+                    await summary.react('👍');
+                    await summary.react('👎');
                     await summary.react('❌');
                     await summary.react('⚠️');
-                    await summary.react('🔁');
 
                     if (!client.flaggedReviews) client.flaggedReviews = new Map();
                     client.flaggedReviews.set(summary.id, {
