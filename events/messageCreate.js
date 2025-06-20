@@ -82,13 +82,15 @@ async function handleScan(attachment, message, client) {
 
                 await summary.react('✅');
                 await summary.react('❌');
+                await summary.react('⚠️');
                 await summary.react('🔁');
 
                 if (!client.flaggedReviews) client.flaggedReviews = new Map();
                 client.flaggedReviews.set(summary.id, {
                     flaggedMessageId: message.id,
                     channelId: message.channel.id,
-                    attachmentUrl: attachment.url
+                    attachmentUrl: attachment.url,
+                    userId: message.author.id
                 });
             }
         }
@@ -156,13 +158,15 @@ async function handleVideoScan(attachment, message, client) {
 
                     await summary.react('✅');
                     await summary.react('❌');
+                    await summary.react('⚠️');
                     await summary.react('🔁');
 
                     if (!client.flaggedReviews) client.flaggedReviews = new Map();
                     client.flaggedReviews.set(summary.id, {
                         flaggedMessageId: message.id,
                         channelId: message.channel.id,
-                        attachmentUrl: attachment.url
+                        attachmentUrl: attachment.url,
+                        userId: message.author.id
                     });
                 }
             }
