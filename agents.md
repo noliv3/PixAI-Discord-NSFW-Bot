@@ -1,115 +1,114 @@
 # AGENTS.md
 
-## 📁 Globale Speicherstruktur
+## Global event storage
 
-Der Bot speichert laufende Events zentral in:
+The bot keeps active events in a single map:
 
 ```js
 client.activeEvents = Map<string, EventData>
 ```
 
-Dabei ist der Key die `channelId` des Event-Channels.
+The key is the `channelId` of the event channel.
 
 ---
 
-### Struktur: `EventData`
+### `EventData` structure
 
 ```ts
 {
-  name: string,                       // Eventname
-  start_time: number,                // Zeitstempel (ms)
-  end_time: number,                  // Zeitstempel (ms)
-  folder: string,                    // Pfad zur Ablage der Bilder
+  name: string,                      // event name
+  start_time: number,                // timestamp (ms)
+  end_time: number,                  // timestamp (ms)
+  folder: string,                    // path for stored images
   entries: Array<{
     messageId: string,
     userId: string,
     filename: string,
     reactionUsers: Set<string>
   }>,
-  users: Set<string>,               // User mit gültigem Beitrag
-  reactions: Map<string, unknown>,  // z.B. zur Livebewertung (nicht aktiv genutzt)
-  remainingTimeout: Timeout,         // Event-Ende-Timer
-  channel_id: string,               // redundante Channel-ID
-  max_entries: number               // maximale Uploads pro User
+  users: Set<string>,               // users with valid entries
+  reactions: Map<string, unknown>,  // e.g. for live rating (currently unused)
+  remainingTimeout: Timeout,        // timer for event end
+  channel_id: string,               // redundant channel ID
+  max_entries: number               // max uploads per user
 }
 ```
 
 ---
 
-## 🔄 Lebenszyklus eines Events
+## Event lifecycle
 
 ### ✅ Start (`!start`)
 
-- Channel wird erstellt oder verwendet
-- `EventData` wird in `client.activeEvents` eingetragen
-- Ordner unter `event_files/` wird angelegt
-- `setTimeout()` plant automatisches Ende
+- Channel is created or reused
+- `EventData` is stored in `client.activeEvents`
+- Folder under `event_files/` is created
+- `setTimeout()` schedules automatic end
 
-### 🔄 Upload / Beitrag
+### 🔄 Upload / submission
 
-- Wird durch `messageCreate.js` erkannt
-- Datei wird gespeichert (mit benanntem Dateistring)
-- `entry` und `userId` werden ins Event eingetragen
+- Detected by `messageCreate.js`
+- File is saved (with generated filename)
+- `entry` and `userId` added to the event
 
-### 🗳 Reaktion durch User
+### 🗳 Reaction from users
 
-- Wird durch `messageReactionAdd.js` verfolgt
-- Bei Reaktionen (außer Mod-Emojis) wird Anzahl gezählt
-- `filename` wird mit neuer `rateX`-Bewertung überschrieben
+- Tracked via `messageReactionAdd.js`
+- Reactions (except mod emojis) increase the count
+- `filename` is overwritten with the new `rateX` value
 
-### 🚮 Reaktion entfernen
+### 🚮 Reaction removed
 
-- Bei `messageReactionRemove.js`
-- Bewertung wird zurückgesetzt (Dateiname aktualisiert)
+- Handled in `messageReactionRemove.js`
+- Rating is reset (filename updated)
 
-### ❌ Stop (`!stop` oder Ablauf)
+### ❌ Stop (`!stop` or timeout)
 
-- Timer läuft ab oder Mod stoppt Event manuell
-- JSON-Statistik wird mit `createStatsJson()` erstellt
-- Top-Einträge werden ermittelt (für `!zip` oder Anzeige)
-- Event wird aus `client.activeEvents` entfernt
+- Timer expires or moderator stops the event manually
+- JSON stats generated with `createStatsJson()`
+- Top entries determined for `!zip` or display
+- Event is removed from `client.activeEvents`
 
 ---
 
-## 📊 Event-Dateinamenstruktur
+## Event filename format
 
-Beispiel:
+Example:
 
 ```
 eventname_userid_msgid_rate3_1687369182098.jpg
 ```
 
-**Erklärt:**
+**Explained:**
 
-- `eventname` = Event-Kennung
-- `userid` = Discord-Nutzer
-- `msgid` = Nachrichten-ID
-- `rate3` = aktuelle Votes (zählt Reaktionen)
-- Datum (ms) = eindeutiger Timestamp
-
----
-
-## 🔧 Admin-Kommandos für Events
-
-| Befehl                  | Funktion                 |
-| ----------------------- | ------------------------ |
-| `!start ...`            | Event starten            |
-| `!extend <name> <+/-h>` | Zeit ändern              |
-| `!stop`                 | Event beenden            |
-| `!eventstats`           | Laufende Events anzeigen |
-| `!zip <event> [topX]`   | ZIP-Export erstellen     |
+- `eventname` = event identifier
+- `userid` = Discord user
+- `msgid` = message ID
+- `rate3` = current votes (reaction count)
+- timestamp in ms
 
 ---
 
-## 🔒 Zugriff & Sicherheit
+## Admin commands for events
 
-- Nur der Bot speichert in `client.activeEvents`
-- Nur autorisierte Rollen können per Command Events steuern
-- Keine Datenbank – 100% dateibasiert
+| Command                 | Purpose                     |
+| ----------------------- | --------------------------- |
+| `!start ...`            | Start an event              |
+| `!extend <name> <+/-h>` | Adjust event time           |
+| `!stop`                 | Stop an event               |
+| `!eventstats`           | List running events         |
+| `!zip <event> [topX]`   | Create ZIP export           |
 
 ---
 
-## 📒 Erweiterungsmöglichkeiten
+## Access & security
+
+- Only the bot writes to `client.activeEvents`
+- Only authorized roles may control events via commands
+- No database – everything is file-based
+
+---
+
+## Possible extensions
 
 -
-

@@ -1,58 +1,58 @@
 # PixAI Discord NSFW Bot
 
-Ein modularer Discord-Bot für Events, Bildbewertung, NSFW-Erkennung und automatisierte Moderation – powered by einer lokalen Bildscanner-API.
+A modular Discord bot for image events, rating, NSFW detection and automated moderation. It communicates with a local image scanner API.
 
 ---
 
-## 🔧 Features
+## Features
 
-- 📁 Automatisches Event-Handling mit Bild-Uploads
-- 🧠 NSFW-Analyse & Tag-Bewertung über lokale Scanner-API
-- 🔁 Voting-System via Reactions (`⭐`, `✅`, `❌`, `🔁`)
-- 📊 Live-Statistiken (`!eventstats`)
-- 🕒 Erweiterbare Laufzeit (`!extend`)
-- 📆 ZIP-Export der besten Einreichungen (`!zip`)
-- 📝 Ungültige Bild-Links werden in `logs/invalid_urls.log` protokolliert
+- 📁 Automatic event handling with image uploads
+- 🧠 NSFW analysis and tag scoring via a local scanner API
+- 🔁 Voting with reactions (`⭐`, `✅`, `❌`, `🔁`)
+- 📊 Live statistics using `!eventstats`
+- 🕒 Extend event duration with `!extend`
+- 📆 ZIP export of top submissions (`!zip`)
+- 📝 Invalid image links are logged to `logs/invalid_urls.log`
 
 ---
 
-## 📂 Projektstruktur
+## Project layout
 
 ```
 discord/
 ├── index.js
-├── token.json                     # ← lokal behalten (nicht commiten)
-├── scanner-config.json            # ← sensible Daten lokal
-├── scanner-config.example.json    # ← Platzhalter für GitHub
-├── commands/
-│   └── *.js                    # Bot-Kommandos (!start, !stop, !extend ...)
-├── events/
-│   └── *.js                    # Discord-Eventhandler (Reactions, Messages)
-├── lib/
-│   └── *.js                    # Hilfsfunktionen: Scan, Filter, Stats, etc.
+├── token.json                     # keep locally (do not commit)
+├── scanner-config.json            # local secrets
+├── scanner-config.example.json    # placeholder for GitHub
+├── commands/                      # bot commands (!start, !stop, !extend ...)
+│   └── *.js
+├── events/                        # Discord event handlers
+│   └── *.js
+├── lib/                           # helpers: scan, filter, stats, etc.
+│   └── *.js
 ├── config/
-│   └── ftp.json                # FTP-Upload (lokal behalten)
-└── event_files/                # gespeicherte Uploads (ignored)
+│   └── ftp.json                   # FTP upload config (local only)
+└── event_files/                   # stored uploads (ignored)
 ```
 
 ---
 
-## 🚀 Schnellstart
+## Quick start
 
-### 🛠️ Voraussetzungen
+### Requirements
 
 - Node.js ≥ 18
-- Lokale Bildscanner-API (z. B. `scanner_api.py`)
+- Local image scanner API (e.g. `scanner_api.py`)
 
-### 📦 Installation
+### Installation
 
 ```bash
 npm install
 ```
 
-### 🧩 Konfiguration
+### Configuration
 
-**Beispiel:** `scanner-config.json`
+Example `scanner-config.json`:
 
 ```json
 {
@@ -72,48 +72,47 @@ npm install
 }
 ```
 
-### 🔒 Sicherheit
+### Security
 
-- `token.json` enthält den Bot-Token – **niemals committen!**
-- `scanner-config.json` ebenfalls vertraulich
+- `token.json` contains the bot token – **never commit it**
+- `scanner-config.json` is also confidential
 
 ---
 
-## 🖼️ PixAI Integration (optional)
+## PixAI integration (optional)
 
 ```bash
-export PIXAI_API_KEY=dein_schlüssel
+export PIXAI_API_KEY=your_key
 !pixai A cat wearing sunglasses
 ```
 
 ---
 
-## 📚 Kommandos
+## Commands
 
-| Befehl                        | Beschreibung                             |
-| ----------------------------- | ---------------------------------------- |
-| `!start <dauer>`              | Starte Event im aktuellen Channel        |
-| `!start <name> <dauer> <max>` | Starte Event mit Channel-Erstellung      |
-| `!extend <name> <±h>`         | Verlängert oder verkürzt Eventzeit       |
-| `!stop`                       | Beendet Event und erstellt Ergebnisliste |
-| `!eventstats`                 | Zeigt aktive Events und Status           |
-| `!setscan <flag> <delete>`    | Passe Scan-Schwellen an                  |
-| `!zip <event> [topX]`         | Exportiere Eventbilder als ZIP           |
-| `!pixai <prompt>`             | Erzeuge KI-Bild via PixAI (optional)     |
-| `!r`                          | Neustart des Bots (nur Owner)            |
-
----
-
-## 🧠 Moderationslogik
-
-- **Filter Level 0:** sofortige Löschung
-- **Level 1–2:** Flagging für Mod-Review
-- **Level 3:** kein Eingriff
-- Reviews steuerbar per ✅, ❌, 🔁
+| Command                       | Description                                |
+| ----------------------------- | ------------------------------------------ |
+| `!start <duration>`           | Start an event in the current channel      |
+| `!start <name> <duration> <max>` | Create a channel and start an event        |
+| `!extend <name> <±h>`         | Extend or reduce event duration            |
+| `!stop`                       | End an event and create the result list    |
+| `!eventstats`                 | Show active events and status              |
+| `!setscan <flag> <delete>`    | Adjust scanning thresholds                 |
+| `!zip <event> [topX]`         | Export event images as ZIP                 |
+| `!pixai <prompt>`             | Generate AI image via PixAI (optional)     |
+| `!r`                          | Restart the bot (owner only)               |
 
 ---
 
-## ✅ Lizenz
+## Moderation logic
 
-MIT – siehe [LICENSE](LICENSE)
+- **Filter level 0:** delete immediately
+- **Level 1–2:** flag for moderator review
+- **Level 3:** no action
+- Reviews can be managed with ✅, ❌, 🔁
 
+---
+
+## License
+
+MIT – see [LICENSE](LICENSE)
