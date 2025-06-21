@@ -6,6 +6,8 @@
     "deleteThreshold": 0.9,
     "moderatorRoleId": "COPY_DISCORD_MOD_ID",
     "moderatorChannelId": "COPY_DISCORD_MOD_LOG_CHANNELID",
+    "gifStep": 5,
+    "videoStep": 20,
     "tagFilters": {
         "0": [ "cp", "loli", "rape", "shota", "sex", "pussy", "covered_nipples", "nude" ],
         "1": [ "sex", "pussy", "nipples", "nude", "ass_visible_through_thighs", "blood" ],

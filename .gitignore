@@ -1,14 +1,17 @@
-# Node modules & logs
+# Node dependencies and logs
 node_modules/
 npm-debug.log*
 
-# Konfigurationsdateien (lokal behalten)
+# Local configuration files (do not commit!)
 token.json
 scanner-config.json
 scanner-filters.json
 config/ftp.json
 
-# Gespeicherte Daten
+# Example config should be committed
+!scanner-config.example.json
+
+# Uploaded, deleted or temporary files
 event_files/
 deleted/
 temp/
@@ -16,11 +19,11 @@ logs/
 *.zip
 *.json_old
 
-# Betriebssystem-/Editor-Dateien
+# OS/editor-generated garbage
 .DS_Store
 Thumbs.db
 *.swp
 
-# Umgebung
+# Environment files
 .env
 .env.local
