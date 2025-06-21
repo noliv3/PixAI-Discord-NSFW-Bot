@@ -1,118 +1,77 @@
-# PixAI Discord NSFW Bot
+# PIXAI DISCORD NSFW BOT – MODERATOR GUIDE
 
-A modular Discord bot for image events, rating, NSFW detection and automated moderation. It communicates with a local image scanner API.
+An automated Discord bot for moderating image content. It detects NSFW content and critical tags using a local AI API. Moderators can evaluate flagged content via emoji reactions.
 
----
+────────────────────────────────────────────
+🔍 FEATURES
 
-## Features
+- Automatic scanning of all images and links
+- Risk evaluation via API (Risk Score + Tags)
+- Moderator alerts for suspicious content
+- Moderation via emoji: 👍 👎 ❌ ⚠️
+- Event system for image competitions
+- ZIP export of top-rated images
+- Logging of all invalid URLs
 
-- 📁 Automatic event handling with image uploads
-- 🧠 NSFW analysis and tag scoring via a local scanner API
-- Voting with reactions (`⭐`, `👍`, `👎`, `❌`)
-- 📊 Live statistics using `!eventstats`
-- 🕒 Extend event duration with `!extend`
-- 📆 ZIP export of top submissions (`!zip`)
-- 📝 Invalid image links are logged to `logs/invalid_urls.log`
+────────────────────────────────────────────
+🚨 FILTER LEVELS (TAG FILTERING)
 
----
+Level 0: Immediate deletion (e.g. `cp`, `loli`, `rape`, `sex`)  
+Level 1–2: Flags for moderator review (e.g. `nipples`, `blood`, `underwear`)  
+Level 3: Considered safe (e.g. `smile`, `flower`)
 
-## Project layout
+Filter levels are defined in `scanner-filters.json`.  
+They can be edited live using: `!filter <level> +tag` or `-tag` (Mods only)
 
-```
-discord/
-├── index.js
-├── token.json                     # keep locally (do not commit)
-├── scanner-config.json            # local secrets
-├── scanner-config.example.json    # placeholder for GitHub
-├── commands/                      # bot commands (!start, !stop, !extend ...)
-│   └── *.js
-├── events/                        # Discord event handlers
-│   └── *.js
-├── lib/                           # helpers: scan, filter, stats, etc.
-│   └── *.js
-├── config/
-│   └── ftp.json                   # FTP upload config (local only)
-└── event_files/                   # stored uploads (ignored)
-```
+────────────────────────────────────────────
+🗳️ MODERATION VIA EMOJI
 
----
+👎  → Reject (no action)  
+👍  → Accept (no action)  
+     If you see 8 Accepts and 2 Rejects, think of it like a small vote.  
+     You can add your opinion to the overall moderation picture.
 
-## Quick start
+❌  → Delete original message in the channel  
 
-### Requirements
+⚠️  → Send **automated DM warning** to the user  
+     The first moderator to click ⚠️ will be mentioned in the message.
 
-- Node.js ≥ 18
-- Local image scanner API (e.g. `scanner_api.py`)
+     DM example:
+     > Hello USER, your image violates the Discord server guidelines.  
+     > You were warned by moderator: XXX  
+     > [Link to the server rules]
 
-### Installation
+────────────────────────────────────────────
+📦 EVENT SYSTEM
 
-```bash
-npm install
-```
+Start: `!start <name> <duration_h> <max_uploads>`  
+Stop: `!stop`  
+Extend: `!extend <name> ±h`  
+Stats: `!eventstats`  
+ZIP export: `!zip <eventname> [topX]`  
 
-### Configuration
+Image filenames reflect score and origin:  
+`eventname_userid_msgid_rate3_TIMESTAMP.jpg`
 
-Example `scanner-config.json`:
+────────────────────────────────────────────
+📌 IMPORTANT COMMANDS
 
-```json
-{
-  "scannerApiUrl": "http://localhost:8000/check",
-  "authHeader": "API_TOKEN_IF_EXISTS",
-  "multipartField": "image",
-  "flagThreshold": 0.5,
-  "deleteThreshold": 0.9,
-  "moderatorRoleId": "MOD_ROLE_ID",
-  "moderatorChannelId": "MOD_LOG_CHANNEL",
-  "tagFilters": {
-    "0": ["cp", "loli", "rape", "shota", "sex", "pussy", "covered_nipples", "nude"],
-    "1": ["sex", "pussy", "nipples", "nude", "ass_visible_through_thighs", "blood"],
-    "2": ["cleavage", "underwear", "cameltoe"],
-    "3": ["smile", "flower", "scenery"]
-  }
-}
-```
+!start            → Start a new event  
+!stop             → Stop event and finalize results  
+!extend           → Adjust event duration  
+!zip              → Export event images  
+!eventstats       → List all running events  
+!filter 0 +tag    → Add tag to filter level  
+!filter 1 -tag    → Remove tag from filter  
+!setscan X Y      → Set scan thresholds (Owner/Admin only)
 
-### Security
+────────────────────────────────────────────
+ℹ️ NOTES
 
-- `token.json` contains the bot token – **never commit it**
-- `scanner-config.json` is also confidential
+- All images are stored in `event_files/`
+- Invalid image links are logged in `logs/invalid_urls.log`
 
----
+────────────────────────────────────────────
+🔒 LICENSE
 
-## PixAI integration (optional)
-
-```bash
-export PIXAI_API_KEY=your_key
-!pixai A cat wearing sunglasses
-```
-
----
-
-## Commands
-
-| Command                       | Description                                |
-| ----------------------------- | ------------------------------------------ |
-| `!start <duration>`           | Start an event in the current channel      |
-| `!start <name> <duration> <max>` | Create a channel and start an event        |
-| `!extend <name> <±h>`         | Extend or reduce event duration            |
-| `!stop`                       | End an event and create the result list    |
-| `!eventstats`                 | Show active events and status              |
-| `!setscan <flag> <delete>`    | Adjust scanning thresholds                 |
-| `!zip <event> [topX]`         | Export event images as ZIP                 |
-| `!pixai <prompt>`             | Generate AI image via PixAI (optional)     |
-| `!r`                          | Restart the bot (owner only)               |
-
----
-
-## Moderation logic
-
-- **Filter level 0:** delete immediately
-- **Level 1–2:** flag for moderator review
-- **Level 3:** no action
-- Reviews can be managed with 👍, 👎, ❌, ⚠️
-
----
-
-## License
-
-MIT – see [LICENSE](LICENSE)
+MIT – see LICENSE

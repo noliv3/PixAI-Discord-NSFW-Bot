@@ -1,65 +1,101 @@
-# Developer Guide
+# PIXAI DISCORD NSFW BOT – DEVELOPER GUIDE
 
-This document explains how the PixAI Discord NSFW Bot is structured and how to extend it.
+This document explains how to install, configure, and extend the PixAI NSFW moderation bot.
 
----
+────────────────────────────────────────────
+🧱 PROJECT STRUCTURE
 
-## Project layout
+./index.js                → Entry point  
+./commands/               → All bot commands (e.g. !start, !stop, !zip)  
+./events/                 → Discord event listeners (messages, reactions)  
+./lib/                    → Core logic: scan, filter, cache, stats, etc.  
+./config/ftp.json         → FTP export settings (optional)  
+./scanner-config.json     → Main scan config (local only)  
+./scanner-filters.json    → Filter levels for tags (editable by Mods)  
+./event_files/            → Stored uploads per event (ignored in Git)  
+./logs/invalid_urls.log   → Broken links are logged here  
+token.json                → Your Discord bot token (DO NOT COMMIT)
 
-```
-./index.js               # bot entry point
-./commands/              # command handlers
-./events/                # Discord event listeners
-./lib/                   # helper modules
-./config/ftp.json        # FTP upload settings
-./scanner-config.json    # API and moderation settings (local)
-./event_files/           # stored uploads (git ignored)
-```
+────────────────────────────────────────────
+🛠️ INSTALLATION
 
-## Installation
+1. Install Node.js v18+
 
-1. Install **Node.js 18+**.
-2. Run `npm install` to fetch dependencies.
-3. Copy `scanner-config.example.json` to `scanner-config.json` and adjust.
-4. Create `token.json` with `{ "token": "YOUR_DISCORD_TOKEN" }`.
+2. Run:
+   npm install
 
-Run the bot with:
+3. Create `scanner-config.json`  
+   Copy from `scanner-config.example.json` and edit:
 
-```bash
+{
+  "scannerApiUrl": "http://localhost:8000/check",
+  "authHeader": "YOUR_API_TOKEN",
+  "flagThreshold": 0.5,
+  "deleteThreshold": 0.9,
+  "moderatorRoleId": "DISCORD_ROLE_ID",
+  "moderatorChannelId": "MOD_CHANNEL_ID",
+  "tagFilters": {
+    "0": ["cp", "loli", "rape", "shota"],
+    "1": ["sex", "pussy", "nipples"],
+    "2": ["underwear", "cameltoe"],
+    "3": ["smile", "flower"]
+  }
+}
+
+4. Create `token.json`:
+
+{
+  "token": "YOUR_DISCORD_BOT_TOKEN"
+}
+
+5. Optional: set up `ftp.json` for ZIP export via FTP (see `/config/ftp.json`)
+
+────────────────────────────────────────────
+🚀 RUNNING THE BOT
+
+Start it with:
+
 node index.js
-```
 
-## Testing
+────────────────────────────────────────────
+🧹 EXTENDING THE BOT
 
-Unit tests are written with Jest. Execute them via:
+➤ Commands:
+- Add a new `.js` file to `/commands/`
+- Export `{ name, async execute(message, client, args) }`
 
-```bash
-npm test
-```
-
-## Extending commands
-
-Add new command files in `commands/` exporting an object with `name` and an `execute` function. Files in this folder are loaded automatically at startup.
-
-```js
+Example:
 module.exports = {
-  name: 'mycommand',
+  name: 'hello',
   async execute(message, client, args) {
-    // your logic here
+    message.reply('Hello!');
   }
 };
-```
 
-## Event system
+➤ Events:
+- Add `.js` to `/events/` with `{ name, once?, async execute(..., client) }`
 
-Running events are stored in `client.activeEvents`. See `agents.md` for details on the `EventData` structure and lifecycle. Images are saved under `event_files/<event_name>/` and votes are tracked by renaming the files.
+────────────────────────────────────────────
+🧠 SCAN LOGIC (OVERVIEW)
 
-Statistics are written by `lib/createStatsJson.js` when an event ends.
+- All images (uploads or links) are scanned via `lib/scan.js`
+- The bot sends the image to `/check` endpoint of the local scanner API
+- Response includes `risk` + `tags`
+- Logic uses `scannerFilter.js` → checks tags against `scanner-filters.json`
+- Cache (`scanCache.js`) prevents duplicate scans
 
-## Contribution
+────────────────────────────────────────────
 
-Feel free to open issues or pull requests. Make sure tests pass before submitting.
+🔒 SECURITY NOTES
 
----
+Never commit:
+- `token.json`
+- `scanner-config.json`
+- `ftp.json`
 
-MIT License
+`.gitignore` includes all sensitive/local files
+
+────────────────────────────────────────────
+📜 LICENSE
+
+MIT – see LICENSE
