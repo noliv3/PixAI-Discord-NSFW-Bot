@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js'
 const fs = require('fs');
 const path = require('path');
 const { token } = require('./token.json');
+
 let config = {};
 try {
     config = require('./config.json');
@@ -30,8 +31,10 @@ const client = new Client({
     ]
 });
 
-client.config = config;
+// 🧠 Hier ist es richtig
+client.activeEvents = new Map();
 
+client.config = config;
 client.flaggedReviews = new Map();
 
 client.commands = new Collection();
